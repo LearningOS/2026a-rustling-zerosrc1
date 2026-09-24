@@ -2,12 +2,12 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
 
+use std::cmp::PartialOrd;
 #[derive(Debug)]
 struct Node<T> {
     val: T,
@@ -69,16 +69,49 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
+
+}
+
+
+impl<T: Copy + PartialOrd> LinkedList<T> {
+    pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self {
+        let mut res = LinkedList {
+            length: list_a.length + list_b.length,
             start: None,
             end: None,
+        };
+        let mut i: u32 = 0;
+        let mut j: u32 = 0;
+        let il = list_a.length;
+        let jl = list_b.length;
+        while i < il && j < jl {
+            let list_a_node = *(list_a.get(i as i32).unwrap());
+            let list_b_node = *(list_b.get(j as i32).unwrap());
+            if list_a_node <= list_b_node {
+                res.add(list_a_node);
+                i += 1;
+            } else {
+                res.add(list_b_node);
+                j += 1;
+            }
         }
-	}
+        while i < il {
+            let list_a_node = *(list_a.get(i as i32).unwrap());
+            res.add(list_a_node);
+            i += 1;
+        }
+        while j < jl {
+            let list_b_node = *(list_b.get(j as i32).unwrap());
+            res.add(list_b_node);
+            j += 1;
+        }
+        res
+    }
 }
+
+
+
+
 
 impl<T> Display for LinkedList<T>
 where
@@ -135,7 +168,7 @@ mod tests {
 		let vec_a = vec![1,3,5,7];
 		let vec_b = vec![2,4,6,8];
 		let target_vec = vec![1,2,3,4,5,6,7,8];
-		
+
 		for i in 0..vec_a.len(){
 			list_a.add(vec_a[i]);
 		}
